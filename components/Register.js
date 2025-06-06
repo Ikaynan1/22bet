@@ -32,10 +32,10 @@ function Register({ onRegister, onBackToLogin }) {
 
         const formatPhone = (value) => {
             const numbers = value.replace(/\D/g, '');
-            if (numbers.length <= 2) return (${numbers};
-            if (numbers.length <= 6) return (${numbers.slice(0,2)}) ${numbers.slice(2)};
-            if (numbers.length <= 10) return (${numbers.slice(0,2)}) ${numbers.slice(2,6)}-${numbers.slice(6)};
-            return (${numbers.slice(0,2)}) ${numbers.slice(2,7)}-${numbers.slice(7,11)};
+            if (numbers.length <= 2) return `(${numbers}`;
+            if (numbers.length <= 6) return `(${numbers.slice(0,2)}) ${numbers.slice(2)}`;
+            if (numbers.length <= 10) return `(${numbers.slice(0,2)}) ${numbers.slice(2,6)}-${numbers.slice(6)}`;
+            return `(${numbers.slice(0,2)}) ${numbers.slice(2,7)}-${numbers.slice(7,11)}`;
         };
 
         const handleSubmit = async (e) => {
@@ -63,7 +63,7 @@ function Register({ onRegister, onBackToLogin }) {
                     localStorage.setItem('registeredUsers', JSON.stringify(users));
                 }
                 
-                alert(${showAdminCode ? 'Admin' : 'Afiliado'} registrado com sucesso!);
+                alert(`${showAdminCode ? 'Admin' : 'Afiliado'} registrado com sucesso!`);
                 onBackToLogin();
             } catch (error) {
                 console.error('Erro no registro:', error);
@@ -152,7 +152,7 @@ function Register({ onRegister, onBackToLogin }) {
                             disabled={loading}
                             className="w-full btn-primary text-white py-3 rounded-2xl font-semibold"
                         >
-                            {loading ? 'Criando...' : Criar Conta ${showAdminCode ? 'Admin' : ''}}
+                            {loading ? 'Criando...' : `Criar Conta ${showAdminCode ? 'Admin' : ''}`}
                         </button>
 
                         <button
