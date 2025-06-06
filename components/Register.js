@@ -101,10 +101,11 @@ function Register({ onRegister, onBackToLogin }) {
                 throw error;
             }
             
-            setMessage(`${showAdminCode ? 'Admin' : 'Afiliado'} registado com sucesso! A redirecionar...`);
-            setTimeout(() => {
-                onBackToLogin();
-            }, 3000);
+            // ===== LÓGICA DE SUCESSO ALTERADA =====
+            // Em vez de redirecionar, mostramos uma mensagem clara.
+            // O utilizador pode clicar no botão "Fazer login" para voltar.
+            setMessage(`${showAdminCode ? 'Admin' : 'Afiliado'} registado com sucesso! Agora pode fazer login.`);
+            
 
         } catch (error) {
             console.error('Erro no registo:', error);
