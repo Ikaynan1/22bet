@@ -1,4 +1,17 @@
 function Register({ onRegister, onBackToLogin }) {
+    // --- INÍCIO DA CORREÇÃO DEFINITIVA ---
+    // Como o seu projeto não usa um sistema de "build", o `import` de outros ficheiros não funciona.
+    // Para resolver isto, criamos a conexão com o Supabase diretamente aqui.
+    // O objeto 'supabase' global vem da biblioteca que o seu site carrega no HTML.
+
+    // ** SUBSTITUA OS VALORES ABAIXO PELOS SEUS DADOS PÚBLICOS **
+    const SUPABASE_URL = 'https://ibqteopvwazfvxqlvzcc.supabase.co'; // Este é o seu URL correto.
+    const SUPABASE_ANON_KEY = 'SUA_CHAVE_ANON_PUBLICA_AQUI'; // COLE A SUA CHAVE "ANON" "PUBLIC" AQUI
+
+    // Verificamos se a biblioteca do Supabase foi carregada e criamos o cliente
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    // --- FIM DA CORREÇÃO DEFINITIVA ---
+
     const [formData, setFormData] = React.useState({
         email: '',
         password: '',
@@ -41,6 +54,11 @@ function Register({ onRegister, onBackToLogin }) {
         e.preventDefault();
         if (!validateForm()) return;
         
+        if (!supabaseClient) {
+            alert("Erro de configuração: A conexão com o Supabase não pôde ser estabelecida.");
+            return;
+        }
+
         setLoading(true);
         try {
             const userData = {
@@ -52,24 +70,20 @@ function Register({ onRegister, onBackToLogin }) {
                 status: 'active'
             };
             
-            // Tentar Supabase primeiro, com a função CORRETA
-            const { error: supabaseError } = await supabase.from('users').insert([userData]);
+            // Usamos o supabaseClient que foi criado no início desta função
+            const { error: supabaseError } = await supabaseClient.from('users').insert([userData]);
 
             if (supabaseError) {
-                // Se o Supabase falhar, usamos o fallback para localStorage
-                console.log('Supabase offline ou com erro, usando localStorage como fallback.', supabaseError);
-                const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-                users.push({...userData, id: Date.now().toString()});
-                localStorage.setItem('registeredUsers', JSON.stringify(users));
+                throw supabaseError; // Lança o erro para ser apanhado pelo bloco catch
             }
             
             alert(`${showAdminCode ? 'Admin' : 'Afiliado'} registrado com sucesso!`);
             onBackToLogin();
 
         } catch (error) {
-            // Este catch agora apanha outros erros inesperados no processo
+            // Este catch agora apanha erros do Supabase e outros erros inesperados
             console.error('Erro geral no registro:', error);
-            alert('Erro no registro. Tente novamente.');
+            alert(`Erro no registro: ${error.message}`);
         } finally {
             setLoading(false);
         }
