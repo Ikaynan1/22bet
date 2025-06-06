@@ -76,11 +76,11 @@ function Dashboard() {
         };
 
         const MetricCard = ({ title, value, icon, color, prefix = '', suffix = '' }) => (
-            <div className="metric-card rounded-2xl p-6 mobile-card">
+            <div className="metric-card rounded-3xl p-8 mobile-card">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className={`text-slate-400 font-medium ${isMobile ? 'text-xs mobile-mb-2' : 'text-sm mb-2'}`}>{title}</p>
-                        <p className={`font-bold text-white ${isMobile ? 'text-xl' : 'text-3xl'}`}>
+                        <p className={`text-slate-400 font-medium ${isMobile ? 'text-xs mobile-mb-2' : 'text-sm mb-3'}`}>{title}</p>
+                        <p className={`font-bold text-white ${isMobile ? 'text-2xl' : 'text-4xl'}`}>
                             {loading ? (
                                 <div className="loading-spinner"></div>
                             ) : (
@@ -88,24 +88,27 @@ function Dashboard() {
                             )}
                         </p>
                     </div>
-                    <div className={`rounded-2xl flex items-center justify-center ${color} ${
-                        isMobile ? 'w-12 h-12' : 'w-16 h-16'
-                    }`}>
-                        <i className={`${icon} text-white ${isMobile ? 'text-lg' : 'text-2xl'}`}></i>
+                    <div className={`rounded-3xl flex items-center justify-center ${color} ${
+                        isMobile ? 'w-16 h-16' : 'w-20 h-20'
+                    } shadow-lg`}>
+                        <i className={`${icon} text-white ${isMobile ? 'text-xl' : 'text-3xl'}`}></i>
                     </div>
                 </div>
             </div>
         );
 
         return (
-            <div data-name="dashboard" data-file="components/Dashboard.js" className={isMobile ? 'mobile-main' : 'p-6'}>
-                <div className={`flex items-center justify-between mb-8 ${isMobile ? 'flex-col space-y-4' : ''}`}>
-                    <h1 className={`font-bold text-white ${isMobile ? 'text-2xl' : 'text-3xl'}`}>Dashboard</h1>
+            <div data-name="dashboard" data-file="components/Dashboard.js" className={isMobile ? 'mobile-main' : 'p-8'}>
+                <div className={`flex items-center justify-between mb-10 ${isMobile ? 'flex-col space-y-6' : ''}`}>
+                    <div>
+                        <h1 className={`font-bold text-white neon-text ${isMobile ? 'text-3xl' : 'text-5xl'}`}>Dashboard</h1>
+                        <p className="text-slate-400 mt-2">Bem-vindo ao seu painel de controle</p>
+                    </div>
                     <select
                         value={period}
                         onChange={(e) => setPeriod(e.target.value)}
-                        className={`input-dark rounded-xl focus:ring-2 focus:ring-indigo-500 ${
-                            isMobile ? 'w-full text-sm px-3 py-2' : 'px-4 py-3'
+                        className={`input-dark rounded-2xl focus:ring-2 focus:ring-purple-500 ${
+                            isMobile ? 'w-full text-sm px-4 py-3' : 'px-6 py-4'
                         }`}
                     >
                         <option value="7">Últimos 7 dias</option>
@@ -114,80 +117,83 @@ function Dashboard() {
                     </select>
                 </div>
 
-                <div className={`grid gap-6 mb-8 ${isMobile ? 'mobile-grid grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
+                <div className={`grid gap-8 mb-10 ${isMobile ? 'mobile-grid grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
                     <MetricCard
                         title="Registros"
                         value={metrics.registrations}
                         icon="fas fa-user-plus"
-                        color="bg-gradient-to-r from-blue-500 to-cyan-500"
+                        color="bg-gradient-to-br from-blue-500 to-cyan-400"
                     />
                     <MetricCard
                         title="FTDs"
                         value={metrics.ftds}
                         icon="fas fa-coins"
-                        color="bg-gradient-to-r from-green-500 to-emerald-500"
+                        color="bg-gradient-to-br from-green-500 to-emerald-400"
                     />
                     <MetricCard
                         title="Depósitos"
                         value={metrics.deposits.toFixed(2)}
                         icon="fas fa-dollar-sign"
-                        color="bg-gradient-to-r from-purple-500 to-pink-500"
+                        color="bg-gradient-to-br from-purple-500 to-pink-400"
                         prefix="$"
                     />
                     <MetricCard
                         title="Comissões"
                         value={metrics.commissions.toFixed(2)}
                         icon="fas fa-chart-line"
-                        color="bg-gradient-to-r from-orange-500 to-red-500"
+                        color="bg-gradient-to-br from-orange-500 to-red-400"
                         prefix="$"
                     />
                 </div>
 
-                <div className="table-dark rounded-2xl mobile-card">
-                    <div className={`px-6 py-4 border-b border-slate-700 ${isMobile ? 'mobile-p-2' : ''}`}>
-                        <h3 className={`font-semibold text-white ${isMobile ? 'text-lg' : 'text-xl'}`}>Histórico Diário</h3>
+                <div className="table-dark rounded-3xl mobile-card overflow-hidden">
+                    <div className={`px-8 py-6 border-b border-slate-700/50 ${isMobile ? 'mobile-p-2' : ''}`}>
+                        <h3 className={`font-bold text-white ${isMobile ? 'text-xl' : 'text-2xl'}`}>
+                            <i className="fas fa-chart-area mr-3 text-purple-400"></i>
+                            Histórico Diário
+                        </h3>
                     </div>
                     
                     <div className="overflow-x-auto">
                         <table className={`w-full ${isMobile ? 'mobile-table' : ''}`}>
                             <thead>
                                 <tr>
-                                    <th className={`text-left text-xs font-medium text-slate-300 uppercase ${
-                                        isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                    <th className={`text-left text-xs font-semibold text-slate-300 uppercase tracking-wider ${
+                                        isMobile ? 'px-4 py-4' : 'px-8 py-6'
                                     }`}>Data</th>
-                                    <th className={`text-left text-xs font-medium text-slate-300 uppercase ${
-                                        isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                    <th className={`text-left text-xs font-semibold text-slate-300 uppercase tracking-wider ${
+                                        isMobile ? 'px-4 py-4' : 'px-8 py-6'
                                     }`}>Reg.</th>
-                                    <th className={`text-left text-xs font-medium text-slate-300 uppercase ${
-                                        isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                    <th className={`text-left text-xs font-semibold text-slate-300 uppercase tracking-wider ${
+                                        isMobile ? 'px-4 py-4' : 'px-8 py-6'
                                     }`}>FTDs</th>
-                                    <th className={`text-left text-xs font-medium text-slate-300 uppercase ${
-                                        isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                    <th className={`text-left text-xs font-semibold text-slate-300 uppercase tracking-wider ${
+                                        isMobile ? 'px-4 py-4' : 'px-8 py-6'
                                     }`}>Dep.</th>
-                                    <th className={`text-left text-xs font-medium text-slate-300 uppercase ${
-                                        isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                    <th className={`text-left text-xs font-semibold text-slate-300 uppercase tracking-wider ${
+                                        isMobile ? 'px-4 py-4' : 'px-8 py-6'
                                     }`}>Com.</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {dailyHistory.slice(0, isMobile ? 7 : 15).map((item, index) => (
-                                    <tr key={index}>
-                                        <td className={`text-sm text-slate-300 ${
-                                            isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                    <tr key={index} className="transition-all duration-300">
+                                        <td className={`text-sm text-slate-300 font-medium ${
+                                            isMobile ? 'px-4 py-4' : 'px-8 py-5'
                                         }`}>{isMobile ? item.date.split('/').slice(0,2).join('/') : item.date}</td>
                                         <td className={`text-sm text-slate-300 ${
-                                            isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                            isMobile ? 'px-4 py-4' : 'px-8 py-5'
                                         }`}>{item.registrations}</td>
                                         <td className={`text-sm text-slate-300 ${
-                                            isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                            isMobile ? 'px-4 py-4' : 'px-8 py-5'
                                         }`}>{item.ftds}</td>
                                         <td className={`text-sm text-slate-300 ${
-                                            isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                            isMobile ? 'px-4 py-4' : 'px-8 py-5'
                                         }`}>
                                             ${isMobile ? parseFloat(item.deposits).toFixed(0) : parseFloat(item.deposits).toLocaleString()}
                                         </td>
-                                        <td className={`text-sm font-medium text-green-400 ${
-                                            isMobile ? 'px-3 py-3' : 'px-6 py-4'
+                                        <td className={`text-sm font-semibold text-green-400 ${
+                                            isMobile ? 'px-4 py-4' : 'px-8 py-5'
                                         }`}>
                                             ${isMobile ? parseFloat(item.commissions).toFixed(0) : parseFloat(item.commissions).toLocaleString()}
                                         </td>

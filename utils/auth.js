@@ -1,20 +1,38 @@
 const AuthService = {
-    login: async (username, password, userType) => {
+    login: async (email, password, userType) => {
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Verificar usuário no Supabase
+            const users = await supabase.getUser(email);
             
+            if (!users || users.length === 0) {
+                throw new Error('Usuário não encontrado');
+            }
+
+            const user = users[0];
+            
+            // Verificar senha (em produção use hash)
+            if (user.password !== password) {
+                throw new Error('Senha incorreta');
+            }
+
+            // Verificar tipo de usuário
+            if (user.type !== userType) {
+                throw new Error('Tipo de usuário incorreto');
+            }
+
             const userData = {
-                id: Math.random().toString(36).substr(2, 9),
-                username,
-                type: userType,
-                name: userType === 'admin' ? 'Admin User' : `Afiliado ${username}`,
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                type: user.type,
                 loginTime: new Date().toISOString()
             };
             
             localStorage.setItem('currentUser', JSON.stringify(userData));
             return userData;
         } catch (error) {
-            throw new Error('Erro no login');
+            console.error('Erro no login:', error);
+            throw new Error('Erro no login: ' + error.message);
         }
     },
 
