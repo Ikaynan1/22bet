@@ -1,3 +1,5 @@
+import { supabase } from '../utils/supabase.js';
+
 function Register({ onRegister, onBackToLogin }) {
     const [formData, setFormData] = React.useState({
         email: '',
