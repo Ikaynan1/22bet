@@ -6,7 +6,7 @@ function Register({ onRegister, onBackToLogin }) {
 
     // ** SUBSTITUA OS VALORES ABAIXO PELOS SEUS DADOS PÚBLICOS **
     const SUPABASE_URL = 'https://ibqteopvwazfvxqlvzcc.supabase.co'; // Este é o seu URL correto.
-    const SUPABASE_ANON_KEY = 'SUA_CHAVE_ANON_PUBLICA_AQUI'; // COLE A SUA CHAVE "ANON" "PUBLIC" AQUI
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlicXRlb3B2d2F6ZnZ4cWx2emNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5ODgyNjQsImV4cCI6MjA2NDU2NDI2NH0.b-8w_uEcGA-l0KBS78v-ZcYGXA52ErguPvLXk_HJJtQ'; // COLE A SUA CHAVE "ANON" "PUBLIC" AQUI
 
     // Verificamos se a biblioteca do Supabase foi carregada e criamos o cliente
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
