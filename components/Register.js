@@ -66,11 +66,19 @@ function Register({ onRegister, onBackToLogin }) {
         setFormData({...formData, phone: formatted});
     };
 
-    // ===== FUNÇÃO DE REGISTO CORRIGIDA =====
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage(''); // Limpa mensagens anteriores
         
+        // ===== NOVO PASSO DE VERIFICAÇÃO =====
+        // Vamos verificar se o cliente do Supabase foi importado corretamente
+        if (!supabase) {
+            console.error('Erro de Configuração: O cliente do Supabase não foi carregado. Verifique o ficheiro utils/supabase.js e as variáveis de ambiente no Netlify.');
+            setMessage('Erro de Configuração: Não foi possível conectar à base de dados.');
+            setLoading(false);
+            return;
+        }
+
         if (!validateForm()) return;
         
         setLoading(true);
@@ -80,33 +88,27 @@ function Register({ onRegister, onBackToLogin }) {
                 email: formData.email,
                 phone: formData.phone,
                 // ATENÇÃO: Guardar senhas em texto plano é um grande risco de segurança.
-                // A forma correta seria usar supabase.auth.signUp() que faz o hash automático.
                 password: formData.password,
                 type: showAdminCode ? 'admin' : 'affiliate',
                 status: 'active',
             };
             
-            // ===== A CORREÇÃO PRINCIPAL ESTÁ AQUI =====
-            // Usamos a função oficial do Supabase para inserir na tabela 'users'
             const { error } = await supabase
                 .from('users')
                 .insert([userData]);
             
-            // Se o Supabase devolver um erro (ex: email duplicado), ele será mostrado ao utilizador.
             if (error) {
                 throw error;
             }
             
-            setMessage(`${showAdminCode ? 'Admin' : 'Afiliado'} registrado com sucesso! Redirecionando...`);
-            // Redireciona para o login após um curto intervalo
+            setMessage(`${showAdminCode ? 'Admin' : 'Afiliado'} registado com sucesso! A redirecionar...`);
             setTimeout(() => {
                 onBackToLogin();
             }, 3000);
 
         } catch (error) {
-            console.error('Erro no registro:', error);
-            // Mostra uma mensagem de erro específica ao utilizador
-            setMessage(`Erro no registro: ${error.message}`);
+            console.error('Erro no registo:', error);
+            setMessage(`Erro no registo: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -160,7 +162,7 @@ function Register({ onRegister, onBackToLogin }) {
                         {errors.confirmPassword && <p className="text-red-400 text-sm mt-2">{errors.confirmPassword}</p>}
                     </div>
                     <button type="submit" disabled={loading} className={`w-full text-white py-4 rounded-2xl font-semibold text-lg transition-all disabled:opacity-50 pulse-glow ${ showAdminCode ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800' : 'btn-primary' }`}>
-                        {loading ? (<div className="flex items-center justify-center"><div className="loading-spinner mr-3"></div>Criando conta...</div>) : (`Criar Conta ${showAdminCode ? 'Admin' : 'Afiliado'}`)}
+                        {loading ? (<div className="flex items-center justify-center"><div className="loading-spinner mr-3"></div>A criar conta...</div>) : (`Criar Conta ${showAdminCode ? 'Admin' : 'Afiliado'}`)}
                     </button>
                     <button type="button" onClick={onBackToLogin} className="w-full text-slate-300 hover:text-white py-3 text-sm transition-colors hover:bg-slate-700/20 rounded-2xl">
                         Já tem conta? <span className="text-purple-400 font-semibold">Fazer login</span>
