@@ -37,22 +37,36 @@ function AdminAffiliates() {
         const startEdit = (affiliate) => {
             setEditingAffiliate(affiliate.id);
             setEditData({
-                totalRegistrations: affiliate.totalRegistrations,
-                totalFTDs: affiliate.totalFTDs,
-                totalDeposits: parseFloat(affiliate.totalDeposits),
-                totalCommissions: parseFloat(affiliate.totalCommissions)
+                totalRegistrations: affiliate.totalRegistrations.toString(),
+                totalFTDs: affiliate.totalFTDs.toString(),
+                totalDeposits: parseFloat(affiliate.totalDeposits).toString(),
+                totalCommissions: parseFloat(affiliate.totalCommissions).toString()
             });
         };
 
+        const handleInputChange = (field, value) => {
+            setEditData(prev => ({
+                ...prev,
+                [field]: value
+            }));
+        };
+
         const saveEdit = () => {
+            const numericData = {
+                totalRegistrations: parseInt(editData.totalRegistrations) || 0,
+                totalFTDs: parseInt(editData.totalFTDs) || 0,
+                totalDeposits: parseFloat(editData.totalDeposits) || 0,
+                totalCommissions: parseFloat(editData.totalCommissions) || 0
+            };
+
             setAffiliates(affiliates.map(affiliate => 
                 affiliate.id === editingAffiliate 
                     ? { 
                         ...affiliate, 
-                        totalRegistrations: editData.totalRegistrations,
-                        totalFTDs: editData.totalFTDs,
-                        totalDeposits: editData.totalDeposits.toFixed(2),
-                        totalCommissions: editData.totalCommissions.toFixed(2)
+                        totalRegistrations: numericData.totalRegistrations,
+                        totalFTDs: numericData.totalFTDs,
+                        totalDeposits: numericData.totalDeposits.toFixed(2),
+                        totalCommissions: numericData.totalCommissions.toFixed(2)
                     }
                     : affiliate
             ));
@@ -61,7 +75,7 @@ function AdminAffiliates() {
             const today = new Date().toISOString().split('T')[0];
             const dailyData = JSON.parse(localStorage.getItem('dailyAffiliateData') || '{}');
             if (!dailyData[editingAffiliate]) dailyData[editingAffiliate] = {};
-            dailyData[editingAffiliate][today] = editData;
+            dailyData[editingAffiliate][today] = numericData;
             localStorage.setItem('dailyAffiliateData', JSON.stringify(dailyData));
             
             setEditingAffiliate(null);
@@ -127,42 +141,44 @@ function AdminAffiliates() {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {editingAffiliate === affiliate.id ? (
                                                     <input
-                                                        type="number"
+                                                        type="text"
                                                         value={editData.totalRegistrations}
-                                                        onChange={(e) => setEditData({...editData, totalRegistrations: parseInt(e.target.value) || 0})}
-                                                        className="w-20 px-2 py-1 border rounded"
+                                                        onChange={(e) => handleInputChange('totalRegistrations', e.target.value)}
+                                                        className="w-20 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500"
+                                                        onFocus={(e) => e.target.select()}
                                                     />
                                                 ) : affiliate.totalRegistrations}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {editingAffiliate === affiliate.id ? (
                                                     <input
-                                                        type="number"
+                                                        type="text"
                                                         value={editData.totalFTDs}
-                                                        onChange={(e) => setEditData({...editData, totalFTDs: parseInt(e.target.value) || 0})}
-                                                        className="w-20 px-2 py-1 border rounded"
+                                                        onChange={(e) => handleInputChange('totalFTDs', e.target.value)}
+                                                        className="w-20 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500"
+                                                        onFocus={(e) => e.target.select()}
                                                     />
                                                 ) : affiliate.totalFTDs}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {editingAffiliate === affiliate.id ? (
                                                     <input
-                                                        type="number"
-                                                        step="0.01"
+                                                        type="text"
                                                         value={editData.totalDeposits}
-                                                        onChange={(e) => setEditData({...editData, totalDeposits: parseFloat(e.target.value) || 0})}
-                                                        className="w-24 px-2 py-1 border rounded"
+                                                        onChange={(e) => handleInputChange('totalDeposits', e.target.value)}
+                                                        className="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500"
+                                                        onFocus={(e) => e.target.select()}
                                                     />
                                                 ) : `$${parseFloat(affiliate.totalDeposits).toLocaleString()}`}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
                                                 {editingAffiliate === affiliate.id ? (
                                                     <input
-                                                        type="number"
-                                                        step="0.01"
+                                                        type="text"
                                                         value={editData.totalCommissions}
-                                                        onChange={(e) => setEditData({...editData, totalCommissions: parseFloat(e.target.value) || 0})}
-                                                        className="w-24 px-2 py-1 border rounded"
+                                                        onChange={(e) => handleInputChange('totalCommissions', e.target.value)}
+                                                        className="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500"
+                                                        onFocus={(e) => e.target.select()}
                                                     />
                                                 ) : `$${parseFloat(affiliate.totalCommissions).toLocaleString()}`}
                                             </td>
