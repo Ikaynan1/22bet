@@ -7,21 +7,25 @@ function Login({ onLogin }) {
 
         const handleLogin = async (e) => {
             e.preventDefault();
+            
+            if (!credentials.username || !credentials.password) {
+                alert('Preencha email e senha!');
+                return;
+            }
+            
             setLoading(true);
             
             try {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                const userData = {
-                    id: '1',
-                    username: credentials.username,
-                    type: loginType,
-                    name: loginType === 'admin' ? 'Admin User' : 'Afiliado Demo'
-                };
+                // Usar AuthService para login real
+                const userData = await AuthService.login(
+                    credentials.username, 
+                    credentials.password, 
+                    loginType
+                );
                 
                 onLogin(userData);
             } catch (error) {
-                alert('Erro no login. Tente novamente.');
+                alert(error.message || 'Login inválido. Verifique suas credenciais.');
             } finally {
                 setLoading(false);
             }
@@ -72,8 +76,8 @@ function Login({ onLogin }) {
                         <div className="relative">
                             <i className="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
                             <input
-                                type="text"
-                                placeholder="Usuário ou Email"
+                                type="email"
+                                placeholder="Email"
                                 value={credentials.username}
                                 onChange={(e) => setCredentials({...credentials, username: e.target.value})}
                                 className="w-full pl-12 pr-4 py-4 input-dark rounded-2xl focus:ring-2 focus:ring-purple-500 transition-all"
@@ -99,7 +103,7 @@ function Login({ onLogin }) {
                             {loading ? (
                                 <div className="flex items-center justify-center">
                                     <div className="loading-spinner mr-3"></div>
-                                    Entrando...
+                                    Verificando...
                                 </div>
                             ) : (
                                 <React.Fragment>
@@ -119,6 +123,13 @@ function Login({ onLogin }) {
                             </button>
                         )}
                     </form>
+
+                    <div className="mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+                        <p className="text-xs text-slate-400 text-center">
+                            <i className="fas fa-info-circle mr-1"></i>
+                            Use credenciais reais cadastradas no sistema
+                        </p>
+                    </div>
                 </div>
             </div>
         );
