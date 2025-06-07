@@ -3,10 +3,10 @@ function AdminDailyEdit() {
         const [selectedAffiliate, setSelectedAffiliate] = React.useState('');
         const [selectedDate, setSelectedDate] = React.useState(new Date().toISOString().split('T')[0]);
         const [dailyData, setDailyData] = React.useState({
-            totalRegistrations: 0,
-            totalFTDs: 0,
-            totalDeposits: 0,
-            totalCommissions: 0
+            totalRegistrations: '0',
+            totalFTDs: '0',
+            totalDeposits: '0',
+            totalCommissions: '0'
         });
         const [affiliates] = React.useState([
             { id: '1', name: 'Afiliado 1' },
@@ -29,7 +29,20 @@ function AdminDailyEdit() {
                 totalDeposits: 0,
                 totalCommissions: 0
             };
-            setDailyData(dayData);
+            
+            setDailyData({
+                totalRegistrations: dayData.totalRegistrations.toString(),
+                totalFTDs: dayData.totalFTDs.toString(),
+                totalDeposits: dayData.totalDeposits.toString(),
+                totalCommissions: dayData.totalCommissions.toString()
+            });
+        };
+
+        const handleInputChange = (field, value) => {
+            setDailyData(prev => ({
+                ...prev,
+                [field]: value
+            }));
         };
 
         const saveDailyData = () => {
@@ -38,11 +51,18 @@ function AdminDailyEdit() {
                 return;
             }
 
+            const numericData = {
+                totalRegistrations: parseInt(dailyData.totalRegistrations) || 0,
+                totalFTDs: parseInt(dailyData.totalFTDs) || 0,
+                totalDeposits: parseFloat(dailyData.totalDeposits) || 0,
+                totalCommissions: parseFloat(dailyData.totalCommissions) || 0
+            };
+
             const storedData = JSON.parse(localStorage.getItem('dailyAffiliateData') || '{}');
             if (!storedData[selectedAffiliate]) {
                 storedData[selectedAffiliate] = {};
             }
-            storedData[selectedAffiliate][selectedDate] = dailyData;
+            storedData[selectedAffiliate][selectedDate] = numericData;
             localStorage.setItem('dailyAffiliateData', JSON.stringify(storedData));
             alert('Dados salvos com sucesso!');
         };
@@ -82,42 +102,48 @@ function AdminDailyEdit() {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Total de Registros</label>
                             <input
-                                type="number"
+                                type="text"
                                 value={dailyData.totalRegistrations}
-                                onChange={(e) => setDailyData({...dailyData, totalRegistrations: parseInt(e.target.value) || 0})}
+                                onChange={(e) => handleInputChange('totalRegistrations', e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                onFocus={(e) => e.target.select()}
+                                placeholder="0"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Número de FTDs</label>
                             <input
-                                type="number"
+                                type="text"
                                 value={dailyData.totalFTDs}
-                                onChange={(e) => setDailyData({...dailyData, totalFTDs: parseInt(e.target.value) || 0})}
+                                onChange={(e) => handleInputChange('totalFTDs', e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                onFocus={(e) => e.target.select()}
+                                placeholder="0"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Depósitos (USD)</label>
                             <input
-                                type="number"
-                                step="0.01"
+                                type="text"
                                 value={dailyData.totalDeposits}
-                                onChange={(e) => setDailyData({...dailyData, totalDeposits: parseFloat(e.target.value) || 0})}
+                                onChange={(e) => handleInputChange('totalDeposits', e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                onFocus={(e) => e.target.select()}
+                                placeholder="0.00"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Comissões (USD)</label>
                             <input
-                                type="number"
-                                step="0.01"
+                                type="text"
                                 value={dailyData.totalCommissions}
-                                onChange={(e) => setDailyData({...dailyData, totalCommissions: parseFloat(e.target.value) || 0})}
+                                onChange={(e) => handleInputChange('totalCommissions', e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                onFocus={(e) => e.target.select()}
+                                placeholder="0.00"
                             />
                         </div>
                     </div>
