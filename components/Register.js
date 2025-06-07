@@ -1,4 +1,4 @@
-function Register({ onRegister, onBackToLogin }) {
+ffunction Register({ onRegister, onBackToLogin }) {
     try {
         const [formData, setFormData] = React.useState({
             email: '',
@@ -44,6 +44,14 @@ function Register({ onRegister, onBackToLogin }) {
             
             setLoading(true);
             try {
+                // Verificar se email já existe
+                const existingUser = await supabase.getUser(formData.email);
+                if (existingUser) {
+                    alert('Email já cadastrado! Tente fazer login.');
+                    setLoading(false);
+                    return;
+                }
+
                 const userData = {
                     name: formData.name,
                     email: formData.email,
@@ -53,21 +61,18 @@ function Register({ onRegister, onBackToLogin }) {
                     status: 'active'
                 };
                 
-                // Tentar Supabase primeiro, fallback para localStorage
-                try {
-                    await supabase.createUser(userData);
-                } catch (supabaseError) {
-                    console.log('Supabase offline, usando localStorage');
-                    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-                    users.push({...userData, id: Date.now().toString()});
-                    localStorage.setItem('registeredUsers', JSON.stringify(users));
-                }
+                // Registrar no Supabase
+                await supabase.createUser(userData);
                 
-                alert(`${showAdminCode ? 'Admin' : 'Afiliado'} registrado com sucesso!`);
+                alert(`${showAdminCode ? 'Admin' : 'Afiliado'} registrado com sucesso! Faça login agora.`);
                 onBackToLogin();
             } catch (error) {
                 console.error('Erro no registro:', error);
-                alert('Erro no registro. Tente novamente.');
+                if (error.message.includes('duplicate key')) {
+                    alert('Email já cadastrado! Tente fazer login.');
+                } else {
+                    alert('Erro no registro: ' + error.message);
+                }
             } finally {
                 setLoading(false);
             }
@@ -152,7 +157,7 @@ function Register({ onRegister, onBackToLogin }) {
                             disabled={loading}
                             className="w-full btn-primary text-white py-3 rounded-2xl font-semibold"
                         >
-                            {loading ? 'Criando...' : `Criar Conta ${showAdminCode ? 'Admin' : ''}`}
+                            {loading ? 'Registrando online...' : `Criar Conta ${showAdminCode ? 'Admin' : ''}`}
                         </button>
 
                         <button
