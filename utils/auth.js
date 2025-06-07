@@ -1,16 +1,21 @@
 const AuthService = {
     login: async (email, password, userType) => {
         try {
-            // Verificar usuário no Supabase
-            const users = await supabase.getUser(email);
+            // Tentar buscar usuário no Supabase
+            let user = null;
+            try {
+                user = await supabase.getUser(email);
+            } catch (supabaseError) {
+                console.log('Supabase offline, tentando localStorage');
+                const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                user = users.find(u => u.email === email);
+            }
             
-            if (!users || users.length === 0) {
+            if (!user) {
                 throw new Error('Usuário não encontrado');
             }
 
-            const user = users[0];
-            
-            // Verificar senha (em produção use hash)
+            // Verificar senha
             if (user.password !== password) {
                 throw new Error('Senha incorreta');
             }
