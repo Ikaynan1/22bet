@@ -1,3 +1,4 @@
+// CREDENCIAIS REAIS DO SUPABASE
 const SUPABASE_URL = 'https://ibqteopvwazfvxqlvzcc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlicXRlb3B2d2F6ZnZ4cWx2emNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5ODgyNjQsImV4cCI6MjA2NDU2NDI2NH0.b-8w_uEcGA-l0KBS78v-ZcYGXA52ErguPvLXk_HJJtQ';
 
@@ -27,7 +28,8 @@ class SupabaseClient {
             const response = await fetch(url, options);
             
             if (!response.ok) {
-                throw new Error(`Supabase error: ${response.status}`);
+                const error = await response.text();
+                throw new Error(`Supabase error: ${response.status} - ${error}`);
             }
 
             return method === 'DELETE' ? null : await response.json();
@@ -42,7 +44,8 @@ class SupabaseClient {
     }
 
     async getUser(email) {
-        return await this.query('users', 'GET', null, `?email=eq.${email}&select=*`);
+        const result = await this.query('users', 'GET', null, `?email=eq.${email}&select=*`);
+        return result && result.length > 0 ? result[0] : null;
     }
 
     async updateUser(id, userData) {
@@ -56,8 +59,7 @@ class SupabaseClient {
             registrations: metrics.registrations,
             ftds: metrics.ftds,
             deposits: metrics.deposits,
-            commissions: metrics.commissions,
-            updated_at: new Date().toISOString()
+            commissions: metrics.commissions
         };
         return await this.query('affiliate_metrics', 'POST', data);
     }
@@ -74,8 +76,7 @@ class SupabaseClient {
             affiliate_id: affiliateId,
             amount: amount,
             wallet_address: wallet,
-            status: 'pending',
-            created_at: new Date().toISOString()
+            status: 'pending'
         };
         return await this.query('payment_requests', 'POST', data);
     }
