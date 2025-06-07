@@ -1,18 +1,30 @@
 const AuthService = {
     login: async (email, password, userType) => {
         try {
-            // Tentar buscar usuário no Supabase
+            if (!email || !password) {
+                throw new Error('Email e senha são obrigatórios');
+            }
+
+            // Validar formato de email
+            if (!/\S+@\S+\.\S+/.test(email)) {
+                throw new Error('Email inválido');
+            }
+
             let user = null;
+            
+            // Tentar buscar usuário no Supabase primeiro
             try {
                 user = await supabase.getUser(email);
+                console.log('Usuário encontrado no Supabase:', user);
             } catch (supabaseError) {
                 console.log('Supabase offline, tentando localStorage');
+                // Fallback para localStorage
                 const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
                 user = users.find(u => u.email === email);
             }
             
             if (!user) {
-                throw new Error('Usuário não encontrado');
+                throw new Error('Usuário não encontrado. Registre-se primeiro.');
             }
 
             // Verificar senha
@@ -22,7 +34,12 @@ const AuthService = {
 
             // Verificar tipo de usuário
             if (user.type !== userType) {
-                throw new Error('Tipo de usuário incorreto');
+                throw new Error(`Este usuário não é ${userType === 'admin' ? 'administrador' : 'afiliado'}`);
+            }
+
+            // Verificar se usuário está ativo
+            if (user.status !== 'active') {
+                throw new Error('Usuário bloqueado. Entre em contato com o suporte.');
             }
 
             const userData = {
@@ -37,7 +54,7 @@ const AuthService = {
             return userData;
         } catch (error) {
             console.error('Erro no login:', error);
-            throw new Error('Erro no login: ' + error.message);
+            throw error;
         }
     },
 
@@ -80,6 +97,7 @@ const AuthService = {
         const now = new Date();
         const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
         
+        // Sessão expira em 24 horas
         if (hoursDiff > 24) {
             AuthService.logout();
             return false;
