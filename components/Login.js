@@ -16,7 +16,6 @@ function Login({ onLogin }) {
             setLoading(true);
             
             try {
-                // Usar AuthService para login real
                 const userData = await AuthService.login(
                     credentials.username, 
                     credentials.password, 
@@ -31,11 +30,14 @@ function Login({ onLogin }) {
             }
         };
 
+        // Renderizar tela de registro
         if (showRegister) {
-            return React.createElement(Register, {
-                onRegister: onLogin,
-                onBackToLogin: () => setShowRegister(false)
-            });
+            return (
+                <Register 
+                    onRegister={onLogin}
+                    onBackToLogin={() => setShowRegister(false)}
+                />
+            );
         }
 
         return (
