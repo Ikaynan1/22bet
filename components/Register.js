@@ -109,16 +109,14 @@ function Register({ onRegister, onBackToLogin }) {
                         />
 
                         {showAdminCode && (
-                            <div>
-                                <input
-                                    type="password"
-                                    placeholder="Código Admin"
-                                    value={formData.adminCode}
-                                    onChange={(e) => setFormData({...formData, adminCode: e.target.value})}
-                                    className="w-full px-4 py-3 input-dark rounded-2xl border border-red-500/30"
-                                />
-                                <p className="text-xs text-slate-400 mt-1">Código: ADMIN2024#AFFIGLOBAL</p>
-                            </div>
+                            <input
+                                type="password"
+                                placeholder="Código Admin Secreto"
+                                value={formData.adminCode}
+                                onChange={(e) => setFormData({...formData, adminCode: e.target.value})}
+                                className="w-full px-4 py-3 input-dark rounded-2xl border border-red-500/30"
+                                required
+                            />
                         )}
 
                         <input
@@ -163,3 +161,4 @@ function Register({ onRegister, onBackToLogin }) {
         reportError(error);
     }
 }
+</trickle
