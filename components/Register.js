@@ -1,4 +1,4 @@
-ffunction Register({ onRegister, onBackToLogin }) {
+function Register({ onRegister, onBackToLogin }) {
     try {
         const [formData, setFormData] = React.useState({
             email: '',
@@ -9,38 +9,27 @@ ffunction Register({ onRegister, onBackToLogin }) {
             adminCode: ''
         });
         const [loading, setLoading] = React.useState(false);
-        const [errors, setErrors] = React.useState({});
         const [showAdminCode, setShowAdminCode] = React.useState(false);
 
         const ADMIN_SECRET_CODE = 'ADMIN2024#AFFIGLOBAL';
 
-        const validateForm = () => {
-            const newErrors = {};
-            
-            if (!formData.name.trim()) newErrors.name = 'Nome é obrigatório';
-            if (!formData.email.trim()) newErrors.email = 'Email é obrigatório';
-            else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email inválido';
-            if (!formData.password) newErrors.password = 'Senha é obrigatória';
-            else if (formData.password.length < 6) newErrors.password = 'Mínimo 6 caracteres';
-            if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Senhas não coincidem';
-            if (!formData.phone.trim()) newErrors.phone = 'Telefone é obrigatório';
-            if (showAdminCode && formData.adminCode !== ADMIN_SECRET_CODE) newErrors.adminCode = 'Código inválido';
-            
-            setErrors(newErrors);
-            return Object.keys(newErrors).length === 0;
-        };
-
-        const formatPhone = (value) => {
-            const numbers = value.replace(/\D/g, '');
-            if (numbers.length <= 2) return `(${numbers}`;
-            if (numbers.length <= 6) return `(${numbers.slice(0,2)}) ${numbers.slice(2)}`;
-            if (numbers.length <= 10) return `(${numbers.slice(0,2)}) ${numbers.slice(2,6)}-${numbers.slice(6)}`;
-            return `(${numbers.slice(0,2)}) ${numbers.slice(2,7)}-${numbers.slice(7,11)}`;
-        };
-
         const handleSubmit = async (e) => {
             e.preventDefault();
-            if (!validateForm()) return;
+            
+            if (!formData.name || !formData.email || !formData.password) {
+                alert('Preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            if (formData.password !== formData.confirmPassword) {
+                alert('Senhas não coincidem!');
+                return;
+            }
+
+            if (showAdminCode && formData.adminCode !== ADMIN_SECRET_CODE) {
+                alert('Código admin inválido!');
+                return;
+            }
             
             setLoading(true);
             try {
@@ -55,7 +44,7 @@ ffunction Register({ onRegister, onBackToLogin }) {
                 const userData = {
                     name: formData.name,
                     email: formData.email,
-                    phone: formData.phone,
+                    phone: formData.phone || '',
                     password: formData.password,
                     type: showAdminCode ? 'admin' : 'affiliate',
                     status: 'active'
@@ -68,11 +57,7 @@ ffunction Register({ onRegister, onBackToLogin }) {
                 onBackToLogin();
             } catch (error) {
                 console.error('Erro no registro:', error);
-                if (error.message.includes('duplicate key')) {
-                    alert('Email já cadastrado! Tente fazer login.');
-                } else {
-                    alert('Erro no registro: ' + error.message);
-                }
+                alert('Erro no registro: ' + error.message);
             } finally {
                 setLoading(false);
             }
@@ -103,8 +88,8 @@ ffunction Register({ onRegister, onBackToLogin }) {
                             value={formData.name}
                             onChange={(e) => setFormData({...formData, name: e.target.value})}
                             className="w-full px-4 py-3 input-dark rounded-2xl focus:ring-2 focus:ring-purple-500"
+                            required
                         />
-                        {errors.name && <p className="text-red-400 text-sm">{errors.name}</p>}
 
                         <input
                             type="email"
@@ -112,14 +97,14 @@ ffunction Register({ onRegister, onBackToLogin }) {
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                             className="w-full px-4 py-3 input-dark rounded-2xl focus:ring-2 focus:ring-purple-500"
+                            required
                         />
-                        {errors.email && <p className="text-red-400 text-sm">{errors.email}</p>}
 
                         <input
                             type="tel"
-                            placeholder="Telefone"
+                            placeholder="Telefone (opcional)"
                             value={formData.phone}
-                            onChange={(e) => setFormData({...formData, phone: formatPhone(e.target.value)})}
+                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
                             className="w-full px-4 py-3 input-dark rounded-2xl focus:ring-2 focus:ring-purple-500"
                         />
 
@@ -142,6 +127,7 @@ ffunction Register({ onRegister, onBackToLogin }) {
                             value={formData.password}
                             onChange={(e) => setFormData({...formData, password: e.target.value})}
                             className="w-full px-4 py-3 input-dark rounded-2xl focus:ring-2 focus:ring-purple-500"
+                            required
                         />
 
                         <input
@@ -150,6 +136,7 @@ ffunction Register({ onRegister, onBackToLogin }) {
                             value={formData.confirmPassword}
                             onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                             className="w-full px-4 py-3 input-dark rounded-2xl focus:ring-2 focus:ring-purple-500"
+                            required
                         />
 
                         <button
@@ -157,7 +144,7 @@ ffunction Register({ onRegister, onBackToLogin }) {
                             disabled={loading}
                             className="w-full btn-primary text-white py-3 rounded-2xl font-semibold"
                         >
-                            {loading ? 'Registrando online...' : `Criar Conta ${showAdminCode ? 'Admin' : ''}`}
+                            {loading ? 'Registrando...' : `Criar Conta ${showAdminCode ? 'Admin' : ''}`}
                         </button>
 
                         <button
