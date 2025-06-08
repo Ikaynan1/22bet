@@ -161,4 +161,3 @@ function Register({ onRegister, onBackToLogin }) {
         reportError(error);
     }
 }
-</trickle
